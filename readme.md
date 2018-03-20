@@ -7,7 +7,7 @@
    * Added detection of lack of folder
    * Added .gitignore !!
 * 1.0.0
-   * Full release
+   * Initial release
 
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
