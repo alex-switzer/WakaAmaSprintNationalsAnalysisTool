@@ -75,40 +75,38 @@ namespace WakaAmaSprintNationalsAnalysisTool
         /// <param name="Directory"></param>
         static void ReadFile(string Directory , Dictionary<int, Team> teamDictionary)
         {
-            //Open a file stream
             using (StreamReader sr = File.OpenText(Directory))
             {
+                sr.ReadLine();
                 string currentLine = "";
-                int lineIndex = 0;
+                int lineIndex = 1;
                 //Read untill the end of the file
                 while ((currentLine = sr.ReadLine()) != null)
                 {
-                    try
-                    {
-                        //Skip the first line
-                        if (lineIndex != 0)
-                        {
-                            //Split the csv
-                            string[] currentLineArray = currentLine.Split(',');
+                    //Is this line valid
+                    string lineValid = "";
 
-                            //Make the team
-                            Team newTeam = new Team
-                            {
-                                //Set the ID
-                                ID = Int32.Parse(currentLineArray[1]),
-                                //Set the Team Name
-                                Name = currentLineArray[3]
-                            };
+                    //Split line by ','
+                    string[] currentLineArray = currentLine.Split(',');
 
-                            //Add the team to the databace
-                            AddPlacing(newTeam, Int32.Parse(currentLineArray[0]) , teamDictionary);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine("Error on line " + (lineIndex + 1));
-                    }
-                    
+                    //Extract data
+                    int ID;
+                    if (!Int32.TryParse(currentLineArray[1], out ID)) lineValid = "Invalid ID at ";
+                    string Name;
+                    Name = currentLineArray[3];
+                    int Place;
+                    if (Int32.TryParse(currentLineArray[0], out Place)) lineValid = "Place ID at ";
+
+                    //Make the temp team class
+                    Team newTeam = new Team();
+                    newTeam.ID = ID;
+                    newTeam.Name = Name;
+
+                    //Add the team to the databace
+                    if (lineValid == "") AddPlacing(newTeam, GetScore(Place), teamDictionary);
+                    if (!(lineValid == "")) Console.WriteLine(lineValid + (lineIndex + 1));
+
+                    //Move on to next line
                     lineIndex++;
                 }
             }

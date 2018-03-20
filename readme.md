@@ -3,6 +3,9 @@
 
 ## Release History
 
+* 1.0.2
+   * Reworked ReadFile()
+   * Reworked GetScore()
 * 1.0.1
    * Added detection of lack of folder
    * Added .gitignore !!
