@@ -3,6 +3,10 @@
 
 ## Release History
 
+* 1.0.3
+   * Reworked main()
+   * Fixed broken GetScore()
+   * Fixed broken ReadFile()
 * 1.0.2
    * Reworked ReadFile()
    * Reworked GetScore()

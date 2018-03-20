@@ -8,12 +8,8 @@ namespace WakaAmaSprintNationalsAnalysisTool
     class Program
     {
         
-
         static void Main(string[] args)
         {
-            /// <summary>
-            /// A dictionary containing all the scores
-            /// </summary>
             Dictionary<int, Team> teamDictionary = new Dictionary<int, Team>();
 
             //---------------Pick directory---------------
@@ -21,20 +17,20 @@ namespace WakaAmaSprintNationalsAnalysisTool
             IEnumerable<string> DirectoryList = SearchCurrentDirectory();
 
             //Is there no folders
-            if (DirectoryList.Count() >= 0)
+            if (DirectoryList.Count() <= 0)
             {
-                Console.WriteLine("Error no folders to pick");
+                Console.WriteLine("Error no folders to pick!");
                 Console.Read();
                 return;
             }
+
             //Is there one folder
             if (DirectoryList.Count() == 1)
             {
-                Console.WriteLine("Picking " + DirectoryList.ElementAt(0));
+                Console.WriteLine("Auto picking folder " + DirectoryList.ElementAt(0));
                 ReadDirectory(DirectoryList.ElementAt(0), teamDictionary);
             }
             else
-            //More then one folder
             {
                 //List them for the user
                 int i = 0;
@@ -43,7 +39,6 @@ namespace WakaAmaSprintNationalsAnalysisTool
                     Console.WriteLine(i + " " + item);
                     i++;
                 }
-
                 //Get the user input
                 int pick = ReadInt("Pick directory number : ", i, 0);
                 //Open all csv file in the directory
@@ -52,15 +47,11 @@ namespace WakaAmaSprintNationalsAnalysisTool
 
             //---------------Show data---------------
             //Got thow sorted data
-            foreach (KeyValuePair<int, Team> entry in SortTeamDictionary( teamDictionary ))
-            {
-                Console.WriteLine( entry.Value.Name.ToString().PadRight(30) + ":" + entry.Value.Scores );
-            }
-
             using (StreamWriter outputFile = new StreamWriter(Directory.GetCurrentDirectory() + @"\output.csv"))
             {
-                foreach (KeyValuePair<int, Team> entry in SortTeamDictionary(teamDictionary))
+                foreach (KeyValuePair<int, Team> entry in SortTeamDictionary( teamDictionary ))
                 {
+                    Console.WriteLine(entry.Value.Name.ToString().PadRight(30) + ":" + entry.Value.Scores);
                     outputFile.WriteLine(entry.Value.Name.ToString() + "," + entry.Value.Scores);
                 }
             }
@@ -95,15 +86,15 @@ namespace WakaAmaSprintNationalsAnalysisTool
                     string Name;
                     Name = currentLineArray[3];
                     int Place;
-                    if (Int32.TryParse(currentLineArray[0], out Place)) lineValid = "Place ID at ";
+                    if (!Int32.TryParse(currentLineArray[0], out Place)) lineValid = "Invalid Score at ";
 
                     //Make the temp team class
                     Team newTeam = new Team();
                     newTeam.ID = ID;
                     newTeam.Name = Name;
 
-                    //Add the team to the databace
-                    if (lineValid == "") AddPlacing(newTeam, GetScore(Place), teamDictionary);
+                    //Add the team  to the databace
+                    if (lineValid == "") AddPlacing(newTeam, Place, teamDictionary);
                     if (!(lineValid == "")) Console.WriteLine(lineValid + (lineIndex + 1));
 
                     //Move on to next line
@@ -115,23 +106,17 @@ namespace WakaAmaSprintNationalsAnalysisTool
         /// <summary>
         /// Add or update the score of a team
         /// </summary>
-        /// <param name="Team"></param>
+        /// <param name="newTeam"></param>
         /// <param name="Place"></param>
-        static void AddPlacing(Team Team, int Place , Dictionary<int, Team> teamDictionary)
+        static void AddPlacing(Team newTeam, int Place , Dictionary<int, Team> teamDictionary)
         {
-            //Has the team got a score
-            if (teamDictionary.ContainsKey(Team.ID))
-            {
-                //Yes just add to there score
-                teamDictionary[Team.ID].Scores += GetScore( Place );
+            //Add them to dictionary if needed
+            if (!teamDictionary.ContainsKey(newTeam.ID)) {
+                teamDictionary.Add(newTeam.ID, newTeam);
+                teamDictionary[newTeam.ID].Scores = 0;
             }
-            else
-            {
-                //No add them to the dictionary
-                teamDictionary.Add(Team.ID, Team);
-                //Give them the score
-                teamDictionary[Team.ID].Scores = GetScore(Place);
-            }
+            //Give them the score
+            teamDictionary[newTeam.ID].Scores += GetScore(Place);
         }
 
         /// <summary>
@@ -168,10 +153,7 @@ namespace WakaAmaSprintNationalsAnalysisTool
             {
                 //Ignore all filles that are not CSV
                 if (item.EndsWith(".lif") && item.Contains("Final"))
-                {
-                    //open the files
-                    ReadFile(item , teamDictionary);
-                }
+                    ReadFile(item, teamDictionary);
             }
         }
 
@@ -227,7 +209,7 @@ namespace WakaAmaSprintNationalsAnalysisTool
         static int GetScore(int Place)
         {
             //Less then 1
-            if (Place >= 0) return 0;
+            if (Place <= 0) return 0;
             //1 to 8
             if (Place <= 8) return 9 - Place;
             //Bigger then 8
