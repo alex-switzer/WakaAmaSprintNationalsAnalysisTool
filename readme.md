@@ -3,9 +3,12 @@
 
 ## Release History
 
+* 1.0.1
+   * Added detection of lack of folder
+   * Added .gitignore !!
 * 1.0.0
-    * Full release
-    
+   * Full release
+
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
