@@ -20,19 +20,35 @@ namespace WakaAmaSprintNationalsAnalysisTool
             //Get list of directorys
             IEnumerable<string> DirectoryList = SearchCurrentDirectory();
 
-            //List them for the user
-            int i = 0;
-            foreach (var item in DirectoryList)
+            //Is there no folders
+            if (DirectoryList.Count() >= 0)
             {
-                Console.WriteLine(i + " " + item);
-                i++;
+                Console.WriteLine("Error no folders to pick");
+                Console.Read();
+                return;
             }
+            //Is there one folder
+            if (DirectoryList.Count() == 1)
+            {
+                Console.WriteLine("Picking " + DirectoryList.ElementAt(0));
+                ReadDirectory(DirectoryList.ElementAt(0), teamDictionary);
+            }
+            else
+            //More then one folder
+            {
+                //List them for the user
+                int i = 0;
+                foreach (var item in DirectoryList)
+                {
+                    Console.WriteLine(i + " " + item);
+                    i++;
+                }
 
-            //Get the user input
-            int pick = ReadInt("Pick directory number : ", i , 0);
-            //Open all csv file in the directory
-            ReadDirectory(DirectoryList.ElementAt(pick) , teamDictionary);
-
+                //Get the user input
+                int pick = ReadInt("Pick directory number : ", i, 0);
+                //Open all csv file in the directory
+                ReadDirectory(DirectoryList.ElementAt(pick), teamDictionary);
+            }
 
             //---------------Show data---------------
             //Got thow sorted data
