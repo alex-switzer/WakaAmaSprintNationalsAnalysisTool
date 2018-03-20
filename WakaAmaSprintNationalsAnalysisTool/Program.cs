@@ -223,18 +223,16 @@ namespace WakaAmaSprintNationalsAnalysisTool
         }
 
         /// <summary>
-        /// Get a Score from a place
+        /// Get a Score from a Place
         /// </summary>
         /// <param name="Place"></param>
-        /// <returns></returns>
         static int GetScore(int Place)
         {
-            //if the Place is more than 8 give them one
-            if (Place < 8)
-            {
-                //else calculate their score and give it back
-                return 9 - Place;
-            }
+            //Less then 1
+            if (Place >= 0) return 0;
+            //1 to 8
+            if (Place <= 8) return 9 - Place;
+            //Bigger then 8
             return 1;
         }
     }
