@@ -172,11 +172,11 @@ namespace WakaAmaSprintNationalsAnalysisTool
                 {
                     Console.WriteLine(Question);
                     input = Int32.Parse(Console.ReadLine());
-                    if ( input > Min && input < Max )
+                    if ( input >= Min && input < Max )
                         return input;
                 }
                 catch (System.FormatException){}
-                Console.WriteLine("Invalid input please enter an interger between " + min + " and " + max);
+                Console.WriteLine("Invalid input please enter an interger between " + Min + " and " + (Max - 1));
             }
         }
 
