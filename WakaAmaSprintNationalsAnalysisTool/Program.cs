@@ -160,39 +160,17 @@ namespace WakaAmaSprintNationalsAnalysisTool
         /// <returns></returns>
         static int ReadInt(string Question , int Max = Int32.MaxValue, int Min = Int32.MinValue)
         {
-            //Max and Min a optional annd will default to the Max and Mix of a int32
-            while (true)
-            {
-                //Ask question
-                Console.Write(Question);
-
-                //Read input
-                bool isValid = Int32.TryParse(Console.ReadLine(), out int i);
-
-                //Is it a number
-                if (isValid)
+            int input;
+            while (true){
+                try
                 {
-                    if (i >= Max)
-                    {
-                        //Is it too big
-                        Console.WriteLine("Invalid input (Too big)");
-                    }
-                    else if (i < Min)
-                    {
-                        //Is it too small
-                        Console.WriteLine("Invalid input (Too small)");
-                    }
-                    else
-                    {
-                        //Valid input
-                        return i;
-                    }
+                    Console.WriteLine(Question);
+                    input = Int32.Parse(Console.ReadLine());
+                    if ( input >= Min && input < Max )
+                        return input;
                 }
-                else
-                {
-                    //Not a number
-                    Console.WriteLine("Invalid input");
-                }
+                catch (System.FormatException){}
+                Console.WriteLine("Invalid input please enter an interger between " + Min + " and " + (Max - 1));
             }
         }
 
