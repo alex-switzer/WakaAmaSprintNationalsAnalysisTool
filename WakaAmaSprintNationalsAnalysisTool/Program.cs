@@ -10,7 +10,7 @@ namespace WakaAmaSprintNationalsAnalysisTool
         
         static void Main(string[] args)
         {
-            Dictionary<int, Team> teamDictionary = new Dictionary<int, Team>();
+            Dictionary<string, int> teamDictionary = new Dictionary<string, int>();
 
             //---------------Pick directory---------------
             //Get list of directorys
@@ -49,10 +49,10 @@ namespace WakaAmaSprintNationalsAnalysisTool
             //Got thow sorted data
             using (StreamWriter outputFile = new StreamWriter(Directory.GetCurrentDirectory() + @"\output.csv"))
             {
-                foreach (KeyValuePair<int, Team> entry in SortTeamDictionary( teamDictionary ))
+                foreach (KeyValuePair<string, int> entry in SortTeamDictionary( teamDictionary ))
                 {
-                    Console.WriteLine(entry.Value.Name.ToString().PadRight(30) + ":" + entry.Value.Scores);
-                    outputFile.WriteLine(entry.Value.Name.ToString() + "," + entry.Value.Scores);
+                    Console.WriteLine(entry.Key.ToString().PadRight(35) + ":" + entry.Value);
+                    outputFile.WriteLine(entry.Key.ToString() + "," + entry.Value);
                 }
             }
 
@@ -64,7 +64,7 @@ namespace WakaAmaSprintNationalsAnalysisTool
         /// Read the contents of a file and then write into the database
         /// </summary>
         /// <param name="Directory"></param>
-        static void ReadFile(string Directory , Dictionary<int, Team> teamDictionary)
+        static void ReadFile(string Directory , Dictionary<string, int> teamDictionary)
         {
             using (StreamReader sr = File.OpenText(Directory))
             {
@@ -82,20 +82,16 @@ namespace WakaAmaSprintNationalsAnalysisTool
 
                     //Extract data
                     int ID;
-                    if (!Int32.TryParse(currentLineArray[1], out ID)) lineValid = "Invalid ID at ";
+                    if (!Int32.TryParse(currentLineArray[1], out ID)) lineValid = "Invalid ID at Line ";
                     string Name;
-                    Name = currentLineArray[3];
+                    Name = currentLineArray[5];
                     int Place;
-                    if (!Int32.TryParse(currentLineArray[0], out Place)) lineValid = "Invalid Score at ";
+                    if (!Int32.TryParse(currentLineArray[0], out Place)) lineValid = "Invalid Score at Line ";
 
-                    //Make the temp team class
-                    Team newTeam = new Team();
-                    newTeam.ID = ID;
-                    newTeam.Name = Name;
 
                     //Add the team  to the databace
-                    if (lineValid == "") AddPlacing(newTeam, Place, teamDictionary);
-                    if (!(lineValid == "")) Console.WriteLine(lineValid + (lineIndex + 1));
+                    if (lineValid == "") AddPlacing(Name, Place, teamDictionary);
+                    if (!(lineValid == "")) Console.WriteLine(lineValid + (lineIndex + 1) + " file " + Directory);
 
                     //Move on to next line
                     lineIndex++;
@@ -108,25 +104,23 @@ namespace WakaAmaSprintNationalsAnalysisTool
         /// </summary>
         /// <param name="newTeam"></param>
         /// <param name="Place"></param>
-        static void AddPlacing(Team newTeam, int Place , Dictionary<int, Team> teamDictionary)
+        static void AddPlacing(string houseName, int Place , Dictionary<string, int> teamDictionary)
         {
             //Add them to dictionary if needed
-            if (!teamDictionary.ContainsKey(newTeam.ID)) {
-                teamDictionary.Add(newTeam.ID, newTeam);
-                teamDictionary[newTeam.ID].Scores = 0;
-            }
+            if (!teamDictionary.ContainsKey(houseName)) {
+                teamDictionary.Add(houseName, 0);            }
             //Give them the score
-            teamDictionary[newTeam.ID].Scores += GetScore(Place);
+            teamDictionary[houseName] += GetScore(Place);
         }
 
         /// <summary>
         /// Returns a IOrderedEnumerable that is sorted by score
         /// </summary>
         /// <returns></returns>
-        static IOrderedEnumerable<KeyValuePair<int, Team>> SortTeamDictionary(Dictionary<int, Team> teamDictionary)
+        static IOrderedEnumerable<KeyValuePair<string, int>> SortTeamDictionary(Dictionary<string, int> teamDictionary)
         {
             //Sort the Dictionary and return the result
-            return teamDictionary.OrderByDescending(x => x.Value.Scores);
+            return teamDictionary.OrderByDescending(x => x.Value);
         }
 
         /// <summary>
@@ -143,7 +137,7 @@ namespace WakaAmaSprintNationalsAnalysisTool
         /// Add all CSV data to teamDictionary in a Directory
         /// </summary>
         /// <param name="DirectoryStr"></param>
-        static void ReadDirectory(string DirectoryStr , Dictionary<int, Team> teamDictionary)
+        static void ReadDirectory(string DirectoryStr , Dictionary<string, int> teamDictionary)
         {
             //List all files
             IEnumerable<string> temp = Directory.EnumerateFiles(DirectoryStr);
